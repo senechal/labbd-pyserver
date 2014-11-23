@@ -143,9 +143,10 @@ def deletaredicao():
 
 @route('/testepessoa')
 def testpoess():
-	dict = {"tipoAutor": 1, "instituicaoPe": "Hong Kong Baptist University", "enderecoPe": "Kowloon Tong, Hong Kong", "idPe": -1, "nomePe": "teste test", "emailPe": "aaaa4@aaaaaa.com.br", "tipoParticipante": 1, "telefonePe": "415-327-0583", "nacionalidadePe": "Chinesa", "tipoOrganizador": 0}
+	dict = {"tipoAutor": 1, "instituicaoPe": "Hong Kong Baptist University", "enderecoPe": "Kowloon Tong, Hong Kong", "nomePe": "teste test", "emailPe": "aaaa444@aaaaaa.com.br", "tipoParticipante": 1, "telefonePe": "415-327-0583", "nacionalidadePe": "Chinesa", "tipoOrganizador": 0}
 	pessoa = Pessoa(dict)
 	try:
 		pessoa.save()
+		print pessoa.idPe
 	except ValueError as e:
 		return e.message

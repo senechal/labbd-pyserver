@@ -71,6 +71,7 @@ class DataBaseManager:
 			1:'Unique constraint violated',
 			904:'Invalid identifier'
 		}
+		print error
 		print switch.get(error.code,error.message)
 		return {'error':1,'message':switch.get(error.code,error.message)}
 

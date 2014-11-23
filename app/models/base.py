@@ -161,8 +161,13 @@ class BaseModel:
 	def save(self):
 		dict = {}
 		for item in self.__class__.pk:
-			dict.update({item:self.__dict__[item]})
-		if not self.objects().get(**dict):
+			if self.__dict__.get(item):
+				dict.update({item:self.__dict__.get(item)})
+		if dict:
+			obj = self.objects().get(**dict)
+		else:
+			obj = None
+		if not obj:
 			print "Creating new object..."
 			self.create()
 			print "Done!"
