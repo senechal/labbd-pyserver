@@ -12,7 +12,8 @@ from models.patrocinador import Patrocinador
 from models.patrocinio import Patrocinio
 from models.base import GenericModel
 from database.database import Q
-from bin.util import dumps
+from bin.util import dumps, parse
+import json
 
 sucess = dumps({'error':0,'message':'OK'})
 
@@ -35,7 +36,8 @@ def eventos():
 @post('/editarcriarevento')
 def editarcriarevento():
 	response.content_type = 'application/json; charset=charset=UTF8'
-	dict = {} #TODO, receber dicionario postado
+	data, = request.body.readlines()
+	dict = parse(data)
 	try:
 		evento = Evento(dict)
 		evento.save()
@@ -46,7 +48,9 @@ def editarcriarevento():
 @post('/deletarevento')
 def deletarevento():
 	response.content_type = 'application/json; charset=charset=UTF8'
-	codEv = ''#TODO pegar o id do eventos
+	data, = request.body.readlines()
+	dict = parse(data)
+	codEv = dict.get('codEv')
 	try:
 		evento = Evento.objects().get(codEv = codEv)
 	except ValueError as e:
@@ -77,7 +81,8 @@ def eventos():
 @post('/editarcriaredicao')
 def editarcriaredicao():
 	response.content_type = 'application/json; charset=charset=UTF8'
-	dict = {} #TODO, receber dicionario postado
+	data, = request.body.readlines()
+	dict = parse(data)
 	try:
 		edicao = Edicao(dict)
 		edicao.save()
@@ -88,8 +93,10 @@ def editarcriaredicao():
 @post('/deletaredicao')
 def deletaredicao():
 	response.content_type = 'application/json; charset=charset=UTF8'
-	codEv = ''#TODO pegar o codEv
-	numEd = ''#TODO pegar o numEd
+	data, = request.body.readlines()
+	dict = parse(data)
+	codEv = dict.get('codEv')
+	numEd = dict.get('numEd')
 	try:
 		edicao = Edicao.objects().get(codEv = codEv, numEd = numEd)
 	except ValueError as e:
@@ -119,7 +126,8 @@ def eventos():
 @post('/editarcriaredicao')
 def editarcriaredicao():
 	response.content_type = 'application/json; charset=charset=UTF8'
-	dict = {} #TODO, receber dicionario postado
+	data, = request.body.readlines()
+	dict = parse(data)
 	try:
 		pessoa = Pessoa(dict)
 		pessoa.save()
@@ -130,7 +138,9 @@ def editarcriaredicao():
 @post('/deletarpessoa')
 def deletaredicao():
 	response.content_type = 'application/json; charset=charset=UTF8'
-	idPe = ''#TODO pegar o idPe
+	data, = request.body.readlines()
+	dict = parse(data)
+	idPe = dict.get('idPe')
 	try:
 		pessoa = Pessoa.objects().get(idPe =idPe)
 	except ValueError as e:
@@ -141,12 +151,9 @@ def deletaredicao():
 	except ValueError as e:
 		return e.message
 
-@route('/testepessoa')
-def testpoess():
-	dict = {"tipoAutor": 1, "instituicaoPe": "Hong Kong Baptist University", "enderecoPe": "Kowloon Tong, Hong Kong", "nomePe": "teste test", "emailPe": "aaaa444@aaaaaa.com.br", "tipoParticipante": 1, "telefonePe": "415-327-0583", "nacionalidadePe": "Chinesa", "tipoOrganizador": 0}
-	pessoa = Pessoa(dict)
-	try:
-		pessoa.save()
-		print pessoa.idPe
-	except ValueError as e:
-		return e.message
+@post('/')
+def test():
+	dict, =  request.body.readlines()
+	dict = parse(dict)
+
+	return dict

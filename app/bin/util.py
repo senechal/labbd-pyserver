@@ -37,3 +37,5 @@ def dumps(obj):
     """
     out = __jsdateregexp__.sub(r'\1', json.dumps(obj, cls=__JSONDateEncoder__))
     return unicode(out).decode('utf-8')
+def parse(obj):
+    return json.loads(obj)
