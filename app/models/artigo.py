@@ -5,26 +5,7 @@ class Artigo(BaseModel):
 
 	def create(self):
 		self.idArt = self.getSequenceId()
-		fields = self.__class__.fields 
-		last = fields[-1]
-		values = ''
-		tpl = ()
-		i =1
-		for item in fields:
-			value = self.__dict__[item]
-			tpl = tpl + (value,)
-			if item == last:
-					values = values +' :'+str(i)
-			else:
-				values = values +' :'+str(i)+', '
-			i = i+1
-		sql = 'INSERT INTO ' + self.__class__.__name__.lower() + ' VALUES ( ' + values + ' )'
-		print sql
-		db.connect()
-		transaction = db.transaction(sql,tpl)
-		db.disconnect()
-		if transaction.get('error') == 1:
-			raise ValueError(transaction) 
+		super(Artigo, self).create()
 
 	def getSequenceId(self):
 		db.connect()

@@ -15,7 +15,12 @@ from database.database import Q
 from bin.util import dumps, parse
 import json
 
-sucess = dumps({'error':0,'message':'OK'})
+
+def success(content = None):
+	dict = {'error':0,'message':'OK'}
+	if content:
+		dict.update({'content':content})
+	return dumps(dict)
 
 
 
@@ -58,7 +63,7 @@ def editarcriarartigo():
 	try:
 		artigo = Artigo(dict)
 		artigo.save()
-		return sucess
+		return sucess(artigo)
 	except ValueError as e:
 		return e.message
 
@@ -74,7 +79,7 @@ def deletarartigo():
 		return e.message
 	try:
 		artigo.delete()
-		return sucess
+		return sucess()
 	except ValueError as e:
 		return e.message
 
@@ -101,7 +106,7 @@ def editarcriarauxilio():
 	try:
 		auxilio = Auxilio(dict)
 		auxilio.save()
-		return sucess
+		return sucess(auxilio)
 	except ValueError as e:
 		return e.message
 
@@ -120,7 +125,7 @@ def deletarauxilio():
 		return e.message
 	try:
 		auxilio.delete()
-		return sucess
+		return sucess()
 	except ValueError as e:
 		return e.message
 
@@ -148,7 +153,7 @@ def editarcriardespesa():
 	try:
 		despesa = Despesa(dict)
 		despesa.save()
-		return sucess
+		return sucess(despesa)
 	except ValueError as e:
 		return e.message
 
@@ -167,7 +172,7 @@ def deletardespesa():
 		return e.message
 	try:
 		despesa.delete()
-		return sucess
+		return sucess()
 	except ValueError as e:
 		return e.message
 
@@ -198,7 +203,7 @@ def editarcriaredicao():
 	try:
 		edicao = Edicao(dict)
 		edicao.save()
-		return sucess
+		return sucess(edicao)
 	except ValueError as e:
 		return e.message
 
@@ -215,7 +220,7 @@ def deletaredicao():
 		return e.message
 	try:
 		edicao.delete()
-		return sucess
+		return sucess()
 	except ValueError as e:
 		return e.message
 
@@ -251,7 +256,7 @@ def editarcriarevento():
 	try:
 		evento = Evento(dict)
 		evento.save()
-		return sucess
+		return sucess(evento)
 	except ValueError as e:
 		return e.message
 
@@ -267,7 +272,7 @@ def deletarevento():
 		return e.message
 	try:
 		evento.delete()
-		return sucess
+		return sucess()
 	except ValueError as e:
 		return e.message
 
@@ -295,7 +300,7 @@ def editarcriarinscrito():
 	try:
 		inscrito = Inscrito(dict)
 		inscrito.save()
-		return sucess
+		return sucess(inscrito)
 	except ValueError as e:
 		return e.message
 
@@ -313,7 +318,7 @@ def deletarinscrito():
 		return e.message
 	try:
 		inscrito.delete()
-		return sucess
+		return sucess()
 	except ValueError as e:
 		return e.message
 
@@ -342,7 +347,7 @@ def editarcriarorganiza():
 	try:
 		organiza = Organiza(dict)
 		organiza.save()
-		return sucess
+		return sucess(organiza)
 	except ValueError as e:
 		return e.message
 
@@ -360,7 +365,7 @@ def deletarorganiza():
 		return e.message
 	try:
 		organiza.delete()
-		return sucess
+		return sucess()
 	except ValueError as e:
 		return e.message
 
@@ -388,7 +393,7 @@ def editarcriarpatrocinador():
 	try:
 		patrocinador = Patrocinador(dict)
 		patrocinador.save()
-		return sucess
+		return sucess(patrocinador)
 	except ValueError as e:
 		return e.message
 
@@ -404,7 +409,7 @@ def deletarpatrocinador():
 		return e.message
 	try:
 		patrocinador.delete()
-		return sucess
+		return sucess()
 	except ValueError as e:
 		return e.message
 
@@ -432,7 +437,7 @@ def editarcriarpatrocinio():
 	try:
 		patrocinio = Patrocinio(dict)
 		patrocinio.save()
-		return sucess
+		return sucess(patrocinio)
 	except ValueError as e:
 		return e.message
 
@@ -451,7 +456,7 @@ def deletarpatrocinio():
 		return e.message
 	try:
 		patrocinio.delete()
-		return sucess
+		return sucess()
 	except ValueError as e:
 		return e.message
 
@@ -479,7 +484,7 @@ def editarcriarpessoa():
 	try:
 		pessoa = Pessoa(dict)
 		pessoa.save()
-		return sucess
+		return sucess(pessoa)
 	except ValueError as e:
 		return e.message
 
@@ -495,7 +500,7 @@ def deletarpessoa():
 		return e.message
 	try:
 		pessoa.delete()
-		return sucess
+		return sucess()
 	except ValueError as e:
 		return e.message
 

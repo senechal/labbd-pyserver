@@ -120,7 +120,7 @@ class BaseManager:
 			return ModelList(list)
 		
 
-class BaseModel:
+class BaseModel(object):
 	@classmethod
 	def objects(cls):
 		return BaseManager(cls)
