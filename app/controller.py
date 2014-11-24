@@ -19,7 +19,7 @@ import json
 def success(content = None):
 	dict = {'error':0,'message':'OK'}
 	if content:
-		dict.update({'content':content})
+		dict.update({'content':content.getDict() })
 	return dumps(dict)
 
 
