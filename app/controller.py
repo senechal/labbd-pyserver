@@ -46,6 +46,7 @@ Pessoa,			X
 #
 #
 
+#Retorna Lista de Todos os Artigos
 @route('/artigos')
 def artigos():
 	response.content_type = 'application/json; charset=charset=UTF8'
@@ -55,10 +56,12 @@ def artigos():
 	except ValueError as e:
 		return e.message
 
+#Recebe dict com atributos para um novo atributo, cria o objeto e salva no banco, retorna o o objeto salvo em forma de json
 @post('/editarcriarartigo')
 def editarcriarartigo():
 	response.content_type = 'application/json; charset=charset=UTF8'
-	data, = request.body.readlines()
+	# data, = request.body.readlines()
+	data = request.forms.get('content')
 	dict = parse(data)
 	try:
 		artigo = Artigo(dict)
@@ -67,10 +70,12 @@ def editarcriarartigo():
 	except ValueError as e:
 		return e.message
 
+#Recebe id de objeto a ser deletado do banco, busca objeto no banco, e o deleta.
 @post('/deletarartigo')
 def deletarartigo():
 	response.content_type = 'application/json; charset=charset=UTF8'
-	data, = request.body.readlines()
+	# data, = request.body.readlines()
+	data = request.forms.get('content')
 	dict = parse(data)
 	idArt = dict.get('idArt')
 	try:
@@ -89,6 +94,7 @@ def deletarartigo():
 #
 #
 
+#Retorna Lista de Todos os Auxilios
 @route('/auxilios')
 def auxilios():
 	response.content_type = 'application/json; charset=charset=UTF8'
@@ -98,10 +104,12 @@ def auxilios():
 	except ValueError as e:
 		return e.message
 
+#Recebe dict com atributos para um novo atributo, cria o objeto e salva no banco, retorna o o objeto salvo em forma de json
 @post('/editarcriarauxilio')
 def editarcriarauxilio():
 	response.content_type = 'application/json; charset=charset=UTF8'
-	data, = request.body.readlines()
+	# data, = request.body.readlines()
+	data = request.forms.get('content')
 	dict = parse(data)
 	try:
 		auxilio = Auxilio(dict)
@@ -110,10 +118,12 @@ def editarcriarauxilio():
 	except ValueError as e:
 		return e.message
 
+#Recebe id de objeto a ser deletado do banco, busca objeto no banco, e o deleta.
 @post('/deletarauxilio')
 def deletarauxilio():
 	response.content_type = 'application/json; charset=charset=UTF8'
-	data, = request.body.readlines()
+	# data, = request.body.readlines()
+	data = request.forms.get('content')
 	dict = parse(data)
 	codEvApr = dict.get('codEvApr')
 	numEdApr = dict.get('numEdApr')
@@ -136,6 +146,7 @@ def deletarauxilio():
 #
 #
 
+#Retorna lista de Todas as Despesas
 @route('/despesas')
 def despesas():
 	response.content_type = 'application/json; charset=charset=UTF8'
@@ -145,10 +156,12 @@ def despesas():
 	except ValueError as e:
 		return e.message
 
+#Recebe dict com atributos para um novo atributo, cria o objeto e salva no banco, retorna o o objeto salvo em forma de json
 @post('/editarcriardespesa')
 def editarcriardespesa():
 	response.content_type = 'application/json; charset=charset=UTF8'
-	data, = request.body.readlines()
+	# data, = request.body.readlines()
+	data = request.forms.get('content')
 	dict = parse(data)
 	try:
 		despesa = Despesa(dict)
@@ -157,12 +170,13 @@ def editarcriardespesa():
 	except ValueError as e:
 		return e.message
 
+#Recebe id de objeto a ser deletado do banco, busca objeto no banco, e o deleta.
 @post('/deletardespesa')
 def deletardespesa():
 	response.content_type = 'application/json; charset=charset=UTF8'
-	data, = request.body.readlines()
+	# data, = request.body.readlines()
+	data = request.forms.get('content')
 	dict = parse(data)
-	#'codDesp', 'codEv', 'numEd'
 	codDesp = dict.get('codDesp')
 	codEv = dict.get('codEv')
 	numEd = dict.get('numEd')
@@ -185,7 +199,7 @@ def deletardespesa():
 #
 #
 
-
+#Retorna lista de Rodas as Edições
 @route('/edicoes')
 def edicoes():
 	response.content_type = 'application/json; charset=charset=UTF8'
@@ -195,10 +209,12 @@ def edicoes():
 	except ValueError as e:
 		return e.message
 
+#Recebe dict com atributos para um novo atributo, cria o objeto e salva no banco, retorna o o objeto salvo em forma de json
 @post('/editarcriaredicao')
 def editarcriaredicao():
 	response.content_type = 'application/json; charset=charset=UTF8'
-	data, = request.body.readlines()
+	# data, = request.body.readlines()
+	data = request.forms.get('content')
 	dict = parse(data)
 	try:
 		edicao = Edicao(dict)
@@ -207,10 +223,12 @@ def editarcriaredicao():
 	except ValueError as e:
 		return e.message
 
+#Recebe id de objeto a ser deletado do banco, busca objeto no banco, e o deleta.
 @post('/deletaredicao')
 def deletaredicao():
 	response.content_type = 'application/json; charset=charset=UTF8'
-	data, = request.body.readlines()
+	# data, = request.body.readlines()
+	data = request.forms.get('content')
 	dict = parse(data)
 	codEv = dict.get('codEv')
 	numEd = dict.get('numEd')
@@ -231,13 +249,27 @@ def deletaredicao():
 #
 
 
-#TODO : ESCREVE
+#Recebe idAu e idArt, e cria uma nova conexão entre artigo e autor.
+@post('/adicionarautor')
+def adicionarautor():
+	response.content_type = 'application/json; charset=charset=UTF8'
+	# data, = request.body.readlines()
+	data = request.forms.get('content')
+	dict = parse(data)
+	try:
+		escreve = Escreve(dict)
+		escreve.save()
+		return sucess()
+	except ValueError as e:
+		return e.message
+
 
 #
 #	EVENTO
 #
 #
 
+#Retorna lista de Todos os Eventos
 @route('/eventos')
 def eventos():
 	response.content_type = 'application/json; charset=charset=UTF8'
@@ -248,10 +280,12 @@ def eventos():
 	except ValueError as e:
 		return e.message
 
+#Recebe dict com atributos para um novo atributo, cria o objeto e salva no banco, retorna o o objeto salvo em forma de json
 @post('/editarcriarevento')
 def editarcriarevento():
 	response.content_type = 'application/json; charset=charset=UTF8'
-	data, = request.body.readlines()
+	# data, = request.body.readlines()
+	data = request.forms.get('content')
 	dict = parse(data)
 	try:
 		evento = Evento(dict)
@@ -260,10 +294,12 @@ def editarcriarevento():
 	except ValueError as e:
 		return e.message
 
+#Recebe id de objeto a ser deletado do banco, busca objeto no banco, e o deleta.
 @post('/deletarevento')
 def deletarevento():
 	response.content_type = 'application/json; charset=charset=UTF8'
-	data, = request.body.readlines()
+	# data, = request.body.readlines()
+	data = request.forms.get('content')
 	dict = parse(data)
 	codEv = dict.get('codEv')
 	try:
@@ -282,6 +318,7 @@ def deletarevento():
 #
 #
 
+#Retorna lista de todos os inscritos
 @route('/inscritos')
 def inscritos():
 	response.content_type = 'application/json; charset=charset=UTF8'
@@ -292,10 +329,12 @@ def inscritos():
 	except ValueError as e:
 		return e.message
 
+#Recebe dict com atributos para um novo atributo, cria o objeto e salva no banco, retorna o o objeto salvo em forma de json
 @post('/editarcriarinscrito')
 def editarcriarinscrito():
 	response.content_type = 'application/json; charset=charset=UTF8'
-	data, = request.body.readlines()
+	# data, = request.body.readlines()
+	data = request.forms.get('content')
 	dict = parse(data)
 	try:
 		inscrito = Inscrito(dict)
@@ -304,10 +343,12 @@ def editarcriarinscrito():
 	except ValueError as e:
 		return e.message
 
+#Recebe id de objeto a ser deletado do banco, busca objeto no banco, e o deleta.
 @post('/deletarinscrito')
 def deletarinscrito():
 	response.content_type = 'application/json; charset=charset=UTF8'
-	data, = request.body.readlines()
+	# data, = request.body.readlines()
+	data = request.forms.get('content')
 	dict = parse(data)
 	codEv = dict.get('codEv')
 	numEd = dict.get('numEd')
@@ -329,6 +370,7 @@ def deletarinscrito():
 #
 #
 
+#Retorna lista de todos os Organizadores
 @route('/organizadores')
 def organizas():
 	response.content_type = 'application/json; charset=charset=UTF8'
@@ -339,10 +381,12 @@ def organizas():
 	except ValueError as e:
 		return e.message
 
+#Recebe dict com atributos para um novo atributo, cria o objeto e salva no banco, retorna o o objeto salvo em forma de json
 @post('/editarcriarorganiza')
 def editarcriarorganiza():
 	response.content_type = 'application/json; charset=charset=UTF8'
-	data, = request.body.readlines()
+	# data, = request.body.readlines()
+	data = request.forms.get('content')
 	dict = parse(data)
 	try:
 		organiza = Organiza(dict)
@@ -351,10 +395,12 @@ def editarcriarorganiza():
 	except ValueError as e:
 		return e.message
 
+#Recebe id de objeto a ser deletado do banco, busca objeto no banco, e o deleta.
 @post('/deletarorganiza')
 def deletarorganiza():
 	response.content_type = 'application/json; charset=charset=UTF8'
-	data, = request.body.readlines()
+	# data, = request.body.readlines()
+	data = request.forms.get('content')
 	dict = parse(data)
 	codEv = dict.get('codEv')
 	numEd = dict.get('numEd')
@@ -376,6 +422,7 @@ def deletarorganiza():
 #
 #
 
+#Retorna lista de Todos os Patrocinadores
 @route('/patrocinadores')
 def patrocinadors():
 	response.content_type = 'application/json; charset=charset=UTF8'
@@ -385,10 +432,12 @@ def patrocinadors():
 	except ValueError as e:
 		return e.message
 
+#Recebe dict com atributos para um novo atributo, cria o objeto e salva no banco, retorna o o objeto salvo em forma de json
 @post('/editarcriarpatrocinador')
 def editarcriarpatrocinador():
 	response.content_type = 'application/json; charset=charset=UTF8'
-	data, = request.body.readlines()
+	# data, = request.body.readlines()
+	data = request.forms.get('content')
 	dict = parse(data)
 	try:
 		patrocinador = Patrocinador(dict)
@@ -397,10 +446,12 @@ def editarcriarpatrocinador():
 	except ValueError as e:
 		return e.message
 
+#Recebe id de objeto a ser deletado do banco, busca objeto no banco, e o deleta.
 @post('/deletarpatrocinador')
 def deletarpatrocinador():
 	response.content_type = 'application/json; charset=charset=UTF8'
-	data, = request.body.readlines()
+	# data, = request.body.readlines()
+	data = request.forms.get('content')
 	dict = parse(data)
 	cnpjPat = dict.get('cnpjPat')
 	try:
@@ -416,10 +467,11 @@ def deletarpatrocinador():
 
 #
 #
-#	PESSOA
+#	PATROCINIO
 #
 #
 
+#Retorna lista de Todos os Patrocinios
 @route('/patrocinios')
 def patrocinios():
 	response.content_type = 'application/json; charset=charset=UTF8'
@@ -429,10 +481,12 @@ def patrocinios():
 	except ValueError as e:
 		return e.message
 
+#Recebe dict com atributos para um novo atributo, cria o objeto e salva no banco, retorna o o objeto salvo em forma de json
 @post('/editarcriarpatrocinio')
 def editarcriarpatrocinio():
 	response.content_type = 'application/json; charset=charset=UTF8'
-	data, = request.body.readlines()
+	# data, = request.body.readlines()
+	data = request.forms.get('content')
 	dict = parse(data)
 	try:
 		patrocinio = Patrocinio(dict)
@@ -441,12 +495,13 @@ def editarcriarpatrocinio():
 	except ValueError as e:
 		return e.message
 
+#Recebe id de objeto a ser deletado do banco, busca objeto no banco, e o deleta.
 @post('/deletarpatrocinio')
 def deletarpatrocinio():
 	response.content_type = 'application/json; charset=charset=UTF8'
-	data, = request.body.readlines()
+	# data, = request.body.readlines()
+	data = request.forms.get('content')
 	dict = parse(data)
-	#'cnpjPat', 'codEv', 'numEd'
 	cnpjPat = dict.get('cnpjPat')
 	codEv = dict.get('codEv')
 	numEd = dict.get('numEd')
@@ -467,6 +522,7 @@ def deletarpatrocinio():
 #
 #
 
+#Recebe lista de Todas as Pessoas
 @route('/pessoas')
 def pessoas():
 	response.content_type = 'application/json; charset=charset=UTF8'
@@ -476,10 +532,12 @@ def pessoas():
 	except ValueError as e:
 		return e.message
 
+#Recebe dict com atributos para um novo atributo, cria o objeto e salva no banco, retorna o o objeto salvo em forma de json
 @post('/editarcriarpessoa')
 def editarcriarpessoa():
 	response.content_type = 'application/json; charset=charset=UTF8'
-	data, = request.body.readlines()
+	# data, = request.body.readlines()
+	data = request.forms.get('content')
 	dict = parse(data)
 	try:
 		pessoa = Pessoa(dict)
@@ -488,10 +546,12 @@ def editarcriarpessoa():
 	except ValueError as e:
 		return e.message
 
+#Recebe id de objeto a ser deletado do banco, busca objeto no banco, e o deleta.
 @post('/deletarpessoa')
 def deletarpessoa():
 	response.content_type = 'application/json; charset=charset=UTF8'
-	data, = request.body.readlines()
+	# data, = request.body.readlines()
+	data = request.forms.get('content')
 	dict = parse(data)
 	idPe = dict.get('idPe')
 	try:
