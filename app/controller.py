@@ -70,9 +70,7 @@ def artigos():
 @post('/editarcriarartigo')
 def editarcriarartigo():
 	response.content_type = 'application/json; charset=charset=UTF8'
-	# data, = request.body.readlines()
-	data = request.forms.get('content')
-	dict = parse(data)
+	dict  = clearRequest(request.forms)
 	try:
 		artigo = Artigo(dict)
 		artigo.save()
@@ -84,9 +82,7 @@ def editarcriarartigo():
 @post('/deletarartigo')
 def deletarartigo():
 	response.content_type = 'application/json; charset=charset=UTF8'
-	# data, = request.body.readlines()
-	data = request.forms.get('content')
-	dict = parse(data)
+	dict  = clearRequest(request.forms)
 	idArt = dict.get('idArt')
 	try:
 		artigo = Artigo.objects().get(idArt = idArt)
@@ -118,9 +114,7 @@ def auxilios():
 @post('/editarcriarauxilio')
 def editarcriarauxilio():
 	response.content_type = 'application/json; charset=charset=UTF8'
-	# data, = request.body.readlines()
-	data = request.forms.get('content')
-	dict = parse(data)
+	dict  = clearRequest(request.forms)
 	try:
 		auxilio = Auxilio(dict)
 		auxilio.save()
@@ -132,9 +126,7 @@ def editarcriarauxilio():
 @post('/deletarauxilio')
 def deletarauxilio():
 	response.content_type = 'application/json; charset=charset=UTF8'
-	# data, = request.body.readlines()
-	data = request.forms.get('content')
-	dict = parse(data)
+	dict  = clearRequest(request.forms)
 	codEvApr = dict.get('codEvApr')
 	numEdApr = dict.get('numEdApr')
 	idApr = dict.get('idApr')
@@ -170,9 +162,7 @@ def despesas():
 @post('/editarcriardespesa')
 def editarcriardespesa():
 	response.content_type = 'application/json; charset=charset=UTF8'
-	# data, = request.body.readlines()
-	data = request.forms.get('content')
-	dict = parse(data)
+	dict  = clearRequest(request.forms)
 	try:
 		despesa = Despesa(dict)
 		despesa.save()
@@ -184,9 +174,7 @@ def editarcriardespesa():
 @post('/deletardespesa')
 def deletardespesa():
 	response.content_type = 'application/json; charset=charset=UTF8'
-	# data, = request.body.readlines()
-	data = request.forms.get('content')
-	dict = parse(data)
+	dict  = clearRequest(request.forms)
 	codDesp = dict.get('codDesp')
 	codEv = dict.get('codEv')
 	numEd = dict.get('numEd')
@@ -223,9 +211,7 @@ def edicoes():
 @post('/editarcriaredicao')
 def editarcriaredicao():
 	response.content_type = 'application/json; charset=charset=UTF8'
-	# data, = request.body.readlines()
-	data = request.forms.get('content')
-	dict = parse(data)
+	dict  = clearRequest(request.forms)
 	try:
 		edicao = Edicao(dict)
 		edicao.save()
@@ -237,9 +223,7 @@ def editarcriaredicao():
 @post('/deletaredicao')
 def deletaredicao():
 	response.content_type = 'application/json; charset=charset=UTF8'
-	# data, = request.body.readlines()
-	data = request.forms.get('content')
-	dict = parse(data)
+	dict  = clearRequest(request.forms)
 	codEv = dict.get('codEv')
 	numEd = dict.get('numEd')
 	try:
@@ -263,9 +247,7 @@ def deletaredicao():
 @post('/adicionarautor')
 def adicionarautor():
 	response.content_type = 'application/json; charset=charset=UTF8'
-	# data, = request.body.readlines()
-	data = request.forms.get('content')
-	dict = parse(data)
+	dict  = clearRequest(request.forms)
 	try:
 		escreve = Escreve(dict)
 		escreve.save()
@@ -294,7 +276,6 @@ def eventos():
 @post('/editarcriarevento')
 def editarcriarevento():
 	response.content_type = 'application/json; charset=charset=UTF8'
-	# data, = request.body.readlines()
 	dict  = clearRequest(request.forms)
 	try:
 		evento = Evento(dict)
@@ -307,9 +288,7 @@ def editarcriarevento():
 @post('/deletarevento')
 def deletarevento():
 	response.content_type = 'application/json; charset=charset=UTF8'
-	# data, = request.body.readlines()
-	data = request.forms.get('content')
-	dict = parse(data)
+	dict  = clearRequest(request.forms)
 	codEv = dict.get('codEv')
 	try:
 		evento = Evento.objects().get(codEv = codEv)
@@ -342,9 +321,7 @@ def inscritos():
 @post('/editarcriarinscrito')
 def editarcriarinscrito():
 	response.content_type = 'application/json; charset=charset=UTF8'
-	# data, = request.body.readlines()
-	data = request.forms.get('content')
-	dict = parse(data)
+	dict  = clearRequest(request.forms)
 	try:
 		inscrito = Inscrito(dict)
 		inscrito.save()
@@ -356,9 +333,7 @@ def editarcriarinscrito():
 @post('/deletarinscrito')
 def deletarinscrito():
 	response.content_type = 'application/json; charset=charset=UTF8'
-	# data, = request.body.readlines()
-	data = request.forms.get('content')
-	dict = parse(data)
+	dict  = clearRequest(request.forms)
 	codEv = dict.get('codEv')
 	numEd = dict.get('numEd')
 	idPart = dict.get('idPart')
@@ -394,9 +369,7 @@ def organizas():
 @post('/editarcriarorganiza')
 def editarcriarorganiza():
 	response.content_type = 'application/json; charset=charset=UTF8'
-	# data, = request.body.readlines()
-	data = request.forms.get('content')
-	dict = parse(data)
+	dict  = clearRequest(request.forms)
 	try:
 		organiza = Organiza(dict)
 		organiza.save()
@@ -408,9 +381,7 @@ def editarcriarorganiza():
 @post('/deletarorganiza')
 def deletarorganiza():
 	response.content_type = 'application/json; charset=charset=UTF8'
-	# data, = request.body.readlines()
-	data = request.forms.get('content')
-	dict = parse(data)
+	dict  = clearRequest(request.forms)
 	codEv = dict.get('codEv')
 	numEd = dict.get('numEd')
 	idOrg = dict.get('idOrg')
@@ -445,9 +416,7 @@ def patrocinadors():
 @post('/editarcriarpatrocinador')
 def editarcriarpatrocinador():
 	response.content_type = 'application/json; charset=charset=UTF8'
-	# data, = request.body.readlines()
-	data = request.forms.get('content')
-	dict = parse(data)
+	dict  = clearRequest(request.forms)
 	try:
 		patrocinador = Patrocinador(dict)
 		patrocinador.save()
@@ -459,9 +428,7 @@ def editarcriarpatrocinador():
 @post('/deletarpatrocinador')
 def deletarpatrocinador():
 	response.content_type = 'application/json; charset=charset=UTF8'
-	# data, = request.body.readlines()
-	data = request.forms.get('content')
-	dict = parse(data)
+	dict  = clearRequest(request.forms)
 	cnpjPat = dict.get('cnpjPat')
 	try:
 		patrocinador = Patrocinador.objects().get(cnpjPat = cnpjPat)
@@ -494,9 +461,7 @@ def patrocinios():
 @post('/editarcriarpatrocinio')
 def editarcriarpatrocinio():
 	response.content_type = 'application/json; charset=charset=UTF8'
-	# data, = request.body.readlines()
-	data = request.forms.get('content')
-	dict = parse(data)
+	dict  = clearRequest(request.forms)
 	try:
 		patrocinio = Patrocinio(dict)
 		patrocinio.save()
@@ -508,9 +473,7 @@ def editarcriarpatrocinio():
 @post('/deletarpatrocinio')
 def deletarpatrocinio():
 	response.content_type = 'application/json; charset=charset=UTF8'
-	# data, = request.body.readlines()
-	data = request.forms.get('content')
-	dict = parse(data)
+	dict  = clearRequest(request.forms)
 	cnpjPat = dict.get('cnpjPat')
 	codEv = dict.get('codEv')
 	numEd = dict.get('numEd')
@@ -545,9 +508,7 @@ def pessoas():
 @post('/editarcriarpessoa')
 def editarcriarpessoa():
 	response.content_type = 'application/json; charset=charset=UTF8'
-	# data, = request.body.readlines()
-	data = request.forms.get('content')
-	dict = parse(data)
+	dict  = clearRequest(request.forms)
 	try:
 		pessoa = Pessoa(dict)
 		pessoa.save()
@@ -559,9 +520,7 @@ def editarcriarpessoa():
 @post('/deletarpessoa')
 def deletarpessoa():
 	response.content_type = 'application/json; charset=charset=UTF8'
-	# data, = request.body.readlines()
-	data = request.forms.get('content')
-	dict = parse(data)
+	dict  = clearRequest(request.forms)
 	idPe = dict.get('idPe')
 	try:
 		pessoa = Pessoa.objects().get(idPe = idPe)

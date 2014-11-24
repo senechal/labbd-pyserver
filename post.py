@@ -3,10 +3,9 @@ import urllib
 import urllib2 
 import json
 
-params = urllib.urlencode({    
-      "codEv":4,
-      "descricaoEv":"VLDB e um importante forum anual e internacional de gerencimede dados e pesquisadores, fornecedores, profissionais, desenvolveores de aplicativos e usuarios",
-      "nomeEv":"Very Large Data Bases",
+params = urllib.urlencode({   
+      "descricaoEv":"Vasdsaante forum anual e internacional de gerencimede dados e pesquisadores, fornecedores, profissionais, desenvolveores de aplicativos e usuarios",
+      "nomeEv":"Very Larasdasdases",
       "totalArtigosApresentadosEv":45,
       "websiteEv":"http://www.vldb.org/"
 })
