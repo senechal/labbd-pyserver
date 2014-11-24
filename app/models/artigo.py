@@ -1,4 +1,5 @@
-from base import BaseModel 
+from base import BaseModel
+from .. import db 
 class Artigo(BaseModel):
 	fields =  ('idArt', 'tituloArt', 'dataApresArt', 'horaApresArt', 'codEv', 'numEd', 'idApr')
 	pk = ('idArt')

@@ -1,4 +1,5 @@
-from base import BaseModel 
+from base import BaseModel
+from .. import db 
 class Evento(BaseModel):
 	fields = ( 'codEv', 'nomeEv', 'descricaoEv', 'websiteEv', 'totalArtigosApresentadosEv' )
 	pk = ('codEv',)

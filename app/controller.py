@@ -16,14 +16,24 @@ from bin.util import dumps, parse
 import json
 
 
-def success(content = None):
+def sucess(content = None):
 	dict = {'error':0,'message':'OK'}
 	if content:
 		dict.update({'content':content.getDict() })
 	return dumps(dict)
 
+def cleanNumber(number):
+	try:
+		return int(number)
+	except ValueError:
+		return number
 
-
+def clearRequest(req):
+	dict = {}
+	for index,value in req.dict.iteritems():
+			aux,  = value
+			dict.update({index: cleanNumber(aux)})
+	return dict
 """ 
 Modelos:	
 Artigo,			X
@@ -285,8 +295,7 @@ def eventos():
 def editarcriarevento():
 	response.content_type = 'application/json; charset=charset=UTF8'
 	# data, = request.body.readlines()
-	data = request.forms.get('content')
-	dict = parse(data)
+	dict  = clearRequest(request.forms)
 	try:
 		evento = Evento(dict)
 		evento.save()

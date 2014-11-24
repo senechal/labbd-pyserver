@@ -1,4 +1,5 @@
-from base import BaseModel 
+from base import BaseModel
+from .. import db 
 class Despesa(BaseModel):
 	fields = ('codDesp', 'codEv', 'numEd', 'cnpjPat', 'codEvPat', 'numEdPat', 'dataDesp', 'valorDesp', 'descricaoDesp')
 	pk = ('codDesp', 'codEv', 'numEd',)
