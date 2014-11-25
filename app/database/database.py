@@ -68,6 +68,7 @@ class DataBaseManager(object):
 		try:
 			self.__db =  cx_Oracle.connect(user=self.__user, password=self.__password, dsn = self.__dsn)
 			self.__cursor = self.__db.cursor()
+			self.__cursor.execute("ALTER SESSION SET NLS_DATE_FORMAT = 'DD/MM/YY HH24:MI:SS' NLS_TIMESTAMP_FORMAT = 'DD/MM/YY HH24:MI:SS.FF'")
 		except cx_Oracle.DatabaseError as e:
 			self.__error(e)
 

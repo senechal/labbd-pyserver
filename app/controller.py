@@ -38,7 +38,7 @@ def cleanNumber(number):
 	try:
 		return int(number)
 	except ValueError:
-		return number
+		return str(number)
 # "Limpa" o request recebido via POST, e retorna um dicionario no formato esperado
 def clearRequest(req):
 	dict = {}
@@ -223,6 +223,8 @@ def deletaredicao():
 	dict  = clearRequest(request.forms)
 	codEv = dict.get('codEv')
 	numEd = dict.get('numEd')
+	print type(codEv)
+	print type(numEd)
 	try:
 		edicao = Edicao.objects().get(codEv = codEv, numEd = numEd)
 	except ValueError as e:
@@ -530,3 +532,20 @@ def deletarpessoa():
 		return e.message
 
 
+
+@post('/despesaspatrocinador')
+def despesaspatrocinador():
+	response.content_type = 'application/json; charset=charset=UTF8'
+	dict  = clearRequest(request.forms)
+	codEv = dict.get('codEv')
+	numEd = dict.get('numEd')
+	sql = """SELECT pat.RAZAOSOCIALPAT as \"Empresa\", SUM(d.valordesp) as \"Total de Despesas\" FROM
+		patrocinador pat JOIN patrocinio p 
+  			ON pat.cnpjpat = p.cnpjpat
+		JOIN despesa d
+  			ON d.NUMEDPAT = p.NUMED and d.cnpjPat = p.CNPJPAT and d.NUMEDPAT = p.NUMED and d.codEv = p.CODEV and d.NUMED = p.NUMED
+		WHERE 
+  			p.codev = :1 and p.NUMED = :2
+		GROUP BY pat.RAZAOSOCIALPAT, pat.CNPJPAT;""" 
+	GenericModel.setFields(("Empresa", "Total de Despesas"))
+	generic = GenericModel.objects().genericQuery(sql,(codEv, numEd,))

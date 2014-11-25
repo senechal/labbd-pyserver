@@ -224,10 +224,12 @@ class BaseModel(object):
 			if item == last:
 				where = where + item + ' = :' +str(i) 
 			else:
-				where = where + item + ' = ' + str(i) + ' and ' 
+				where = where + item + ' = :' + str(i) + ' and ' 
 			i = i+1
 			tpl = tpl + (self.__dict__[item],)
 		sql = 'UPDATE ' + self.__class__.__name__.lower() + ' SET '+ values + ' WHERE '+where
+		print sql
+		print tpl
 		#Conecta no banco e faz a transação
 		db.connect()
 		transaction = db.transaction(sql,tpl)
@@ -251,10 +253,11 @@ class BaseModel(object):
 				if item == last:
 					where = where + item + ' = :' +str(i) 
 				else:
-					where = where + item + ' = ' + str(i) + ' and ' 
+					where = where + item + ' = :' + str(i) + ' and ' 
 				i = i+1
 				tpl = tpl + (self.__dict__[item],)
 			sql = 'DELETE FROM '+ self.__class__.__name__.lower() + ' WHERE ' + where
+			print sql
 			db.connect()
 			transaction = db.transaction(sql,tpl)
 			db.disconnect()
@@ -269,4 +272,9 @@ class GenericModel(BaseModel):
 	fields = None
 	@classmethod
 	def setFields(cls,tpl):
-		GenericModel.fields = tpl
+		if not GenericModel.fields:
+			GenericModel.fields = tpl
+		else:
+			raise ValueError('Fields já estão setados, libere antes de usar')
+	def emptyFids(cls,tpl):
+		GenericModel.fields = None
