@@ -1,4 +1,7 @@
+#!/usr/bin/python
 # -*- coding: utf-8 -*-
+
+
 from bottle import route, run, template, post, request, response
 from models.pessoa import Pessoa 
 from models.artigo import Artigo
@@ -16,39 +19,33 @@ from bin.util import dumps, parse
 import json
 
 
+""" 
+controller.py
+Script Contem todos as funções de controle do sistema, 
+Cada função dessa é chamada via http de acordo com sua URL defina pelos seus decoradores (decorators,ex: @route('/url'))
+"""
+
+
+#Função retorna string de sucesso esperada pelo Cliente
 def sucess(content = None):
 	dict = {'error':0,'message':'OK'}
 	if content:
 		dict.update({'content':content.getDict() })
 	return dumps(dict)
 
+#Verifica se Valor em uma string é um numero, se sim retorna o valor como inteiro, se não como string
 def cleanNumber(number):
 	try:
 		return int(number)
 	except ValueError:
 		return number
-
+# "Limpa" o request recebido via POST, e retorna um dicionario no formato esperado
 def clearRequest(req):
 	dict = {}
 	for index,value in req.dict.iteritems():
 			aux,  = value
 			dict.update({index: cleanNumber(aux)})
 	return dict
-""" 
-Modelos:	
-Artigo,			X
-Auxilio,		X
-Despesa,		X
-Edição,			X
-Escreve, 
-Evento,	 		X
-Inscrito,		X
-Organiza,		X
-Patrocinador,	X
-Patrocinio,		X
-Pessoa,			X
-
-"""
 
 #
 #
