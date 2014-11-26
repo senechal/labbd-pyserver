@@ -98,7 +98,16 @@ class DataBaseManager(object):
 	#Cria variavel a se utilizada em procedimentos e funcoes, o padrão é NUMBER
 	def var(self,type):
 		ora_type = {
+			"VARCHAR2":cx_Oracle.STRING,
+			"NVARCHAR2":cx_Oracle.STRING,
+			"LONG":cx_Oracle.STRING,
+			"CHAR": cx_Oracle.FIXED_CHAR,
 			"NUMBER":cx_Oracle.NUMBER,
+			"FLOAT":cx_Oracle.NUMBER,
+			"DATE":cx_Oracle.DATETIME,
+			"TIMESTAMP": cx_Oracle.TIMESTAMP,
+			"CLOB":cx_Oracle.CLOB,
+			"BLOB":cx_Oracle.BLOB
 		}
 		try:
 			return self.__cursor.var(ora_type.get(type,cx_Oracle.NUMBER))

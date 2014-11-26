@@ -7,6 +7,8 @@ from bottle import run
 import json
 from database.database import DataBaseManager as database
 import sys
+import os
+os.environ['NLS_LANG'] = 'AMERICAN_AMERICA.UTF8'
 
 """
 App.__init__.py:

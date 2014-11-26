@@ -17,7 +17,7 @@ from models.base import GenericModel
 from database.database import Q
 from bin.util import dumps, parse
 import json
-
+from app import db
 
 """ 
 controller.py
@@ -38,7 +38,7 @@ def cleanNumber(number):
 	try:
 		return int(number)
 	except ValueError:
-		return str(number)
+		return unicode(number)
 # "Limpa" o request recebido via POST, e retorna um dicionario no formato esperado
 def clearRequest(req):
 	dict = {}
@@ -539,13 +539,67 @@ def despesaspatrocinador():
 	dict  = clearRequest(request.forms)
 	codEv = dict.get('codEv')
 	numEd = dict.get('numEd')
-	sql = """SELECT pat.RAZAOSOCIALPAT as \"Empresa\", SUM(d.valordesp) as \"Total de Despesas\" FROM
-		patrocinador pat JOIN patrocinio p 
-  			ON pat.cnpjpat = p.cnpjpat
-		JOIN despesa d
-  			ON d.NUMEDPAT = p.NUMED and d.cnpjPat = p.CNPJPAT and d.NUMEDPAT = p.NUMED and d.codEv = p.CODEV and d.NUMED = p.NUMED
-		WHERE 
-  			p.codev = :1 and p.NUMED = :2
-		GROUP BY pat.RAZAOSOCIALPAT, pat.CNPJPAT;""" 
-	GenericModel.setFields(("Empresa", "Total de Despesas"))
-	generic = GenericModel.objects().genericQuery(sql,(codEv, numEd,))
+	sql = """	SELECT pat.RAZAOSOCIALPAT AS \"Empresa\", SUM(d.valordesp) AS \"Total de Despesas\" FROM
+				patrocinador pat JOIN patrocinio p 
+		  			ON pat.cnpjpat = p.cnpjpat
+				JOIN despesa d
+		  			ON d.NUMEDPAT = p.NUMED AND d.cnpjPat = p.CNPJPAT AND d.NUMEDPAT = p.NUMED AND d.codEv = p.CODEV AND d.NUMED = p.NUMED
+				WHERE 
+		  			p.codev = :1 AND p.NUMED = :2
+				GROUP BY pat.RAZAOSOCIALPAT, pat.CNPJPAT
+				ORDER BY pat.RAZAOSOCIALPAT
+		  """ 
+	try:
+		GenericModel.setFields(("Empresa", "Total de Despesas"))
+		generic = GenericModel.objects().genericQuery(sql,(codEv, numEd,))
+		GenericModel.emptyFilds()
+		return sucess(generic)
+	except ValueError as e:
+		return e.message
+
+@post('/auxiliopatrocinador')
+def auxiliopatrocinador():
+	response.content_type = 'application/json; charset=charset=UTF8'
+	dict  = clearRequest(request.forms)
+	codEv = dict.get('codEv')
+	numEd = dict.get('numEd')
+	sql = """	SELECT pat.RAZAOSOCIALPAT AS "Empresa", aux.tipoaux AS "Tipo Auxilio", SUM(aux.valoraux) AS "Valores" FROM
+				patrocinador pat JOIN patrocinio p 
+				  ON pat.cnpjpat = p.cnpjpat
+				JOIN auxilio aux
+				  ON aux.codEvPat = p.codev AND aux.cnpjPat = p.CNPJPAT AND aux.NUMEDPAT = p.NUMED 
+				WHERE 
+				  p.codev = :1 AND p.NUMED = :2
+				GROUP BY ROLLUP(pat.RAZAOSOCIALPAT, aux.tipoaux)
+				ORDER BY pat.RAZAOSOCIALPAT, aux.tipoaux
+		  """
+	try:
+		GenericModel.setFields(("Empresa", "Tipo Auxilio", "Valores"))
+		generic = GenericModel.objects().genericQuery(sql,(codEv, numEd,))
+		GenericModel.emptyFilds()
+		return sucess(generic)
+	except ValueError as e:
+		return e.message
+
+@post('/relatorioapresentacao')
+def relatorioapresentacao():
+	response.content_type = 'application/json; charset=charset=UTF8'
+	dict  = clearRequest(request.forms)
+	codEv = dict.get('codEv')
+	numEd = dict.get('numEd')
+	db.connect()
+	var = db.var("LONG")
+	codEvs, numeds,json = db.procedure("RELATORIOS.apresentacoes",[codEv,numEd,var])
+	db.disconnect()
+	return json.getvalue()
+@post('/relatorioapresentadores')
+def relatorioinscritos():
+	response.content_type = 'application/json; charset=charset=UTF8'
+	dict  = clearRequest(request.forms)
+	codEv = dict.get('codEv')
+	numEd = dict.get('numEd')
+	db.connect()
+	var = db.var("LONG")
+	json = db.function("RELATORIOS.inscritos", var,[codEv,numEd])
+	db.disconnect()
+	return json

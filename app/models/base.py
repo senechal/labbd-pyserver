@@ -20,11 +20,11 @@ class ModelList:
 	def __iter__(self):
 		return iter(self.list)
 	#Retona lista em formato de dicionario
-	def dict(self):
-		dict = {}
+	def getDict(self):
+		list = ()
 		for i,item in enumerate(self.list):
-			dict.update({i:item.getDict()})
-		return dict
+			list = list + (item.getDict(),)
+		return list
 	#retorna lista como json, pronto pra se enviado para o cliente
 	def getJson(self):
 		tpl = ()
@@ -150,8 +150,8 @@ class BaseModel(object):
 		for dictionary in initial_data:
 			for key in dictionary:
 				setattr(self, key, dictionary[key])
-			for key in kwargs:
-				setattr(self, key, kwargs[key])
+		for key in kwargs:
+			setattr(self, key, kwargs[key])
 	#Retorna atributos do Objeto em forma de Json
 	def toJson(self):
 		return str(dumps(self.__dict__))
@@ -190,7 +190,7 @@ class BaseModel(object):
 		for item in self.__class__.pk:
 			if self.__dict__.get(item):
 				dict.update({item:self.__dict__.get(item)})
-		if dict:
+		if dict and len(dict) == len(self.__class__.pk):
 			obj = self.objects().get(**dict)
 		else:
 			obj = None
@@ -228,8 +228,6 @@ class BaseModel(object):
 			i = i+1
 			tpl = tpl + (self.__dict__[item],)
 		sql = 'UPDATE ' + self.__class__.__name__.lower() + ' SET '+ values + ' WHERE '+where
-		print sql
-		print tpl
 		#Conecta no banco e faz a transação
 		db.connect()
 		transaction = db.transaction(sql,tpl)
@@ -257,7 +255,6 @@ class BaseModel(object):
 				i = i+1
 				tpl = tpl + (self.__dict__[item],)
 			sql = 'DELETE FROM '+ self.__class__.__name__.lower() + ' WHERE ' + where
-			print sql
 			db.connect()
 			transaction = db.transaction(sql,tpl)
 			db.disconnect()
@@ -276,5 +273,6 @@ class GenericModel(BaseModel):
 			GenericModel.fields = tpl
 		else:
 			raise ValueError('Fields já estão setados, libere antes de usar')
-	def emptyFids(cls,tpl):
+	@classmethod
+	def emptyFilds(cls):
 		GenericModel.fields = None
