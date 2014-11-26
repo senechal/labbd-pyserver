@@ -5,6 +5,7 @@
 from bottle import route, run, template, post, request, response
 from models.pessoa import Pessoa 
 from models.artigo import Artigo
+from models.auxilio import Auxilio
 from models.despesa import Despesa
 from models.edicao import Edicao
 from models.escreve import Escreve
