@@ -39,7 +39,7 @@ def cleanNumber(number):
 	try:
 		return int(number)
 	except ValueError:
-		return unicode(number)
+		return number
 # "Limpa" o request recebido via POST, e retorna um dicionario no formato esperado
 def clearRequest(req):
 	dict = {}
