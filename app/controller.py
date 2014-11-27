@@ -195,7 +195,7 @@ def deletardespesa():
 #
 #
 
-#Retorna lista de Rodas as Edições
+#Retorna lista de Todas as Edições
 @route('/edicoes')
 def edicoes():
 	response.content_type = 'application/json; charset=charset=UTF8'
@@ -243,14 +243,50 @@ def deletaredicao():
 #
 
 
-#Recebe idAu e idArt, e cria uma nova conexão entre artigo e autor.
-@post('/adicionarautor')
-def adicionarautor():
+
+#Retorna lista de Todas  as ligações Escreve
+@route('/escreve')
+def escreve_():
+	response.content_type = 'application/json; charset=charset=UTF8'
+	sql = """	SELECT e.idAut as \"idAut\",p.nomePe as \"nomePe\", e.idArt as \"idArt\", a.tituloArt as \"tituloArt\" 
+			 	FROM pessoa p, escreve e, artigo a
+			 	WHERE p.idPe = e.idAut and e.idArt = a.idArt"""
+	try:
+		GenericModel.emptyFilds()
+		GenericModel.setFields(("idAut", "nomePe", "idArt", "tituloArt"))
+		generic = GenericModel.objects().genericQuery(sql)
+		GenericModel.emptyFilds()
+		return sucess(generic)
+	except ValueError as e:
+		return e.message
+			
+		
+
+#Recebe dict com atributos para um novo atributo, cria o objeto e salva no banco, retorna o o objeto salvo em forma de json
+@post('/editarcriarescreve')
+def editarcriaredicao():
 	response.content_type = 'application/json; charset=charset=UTF8'
 	dict  = clearRequest(request.forms)
 	try:
 		escreve = Escreve(dict)
 		escreve.save()
+		return sucess(escreve)
+	except ValueError as e:
+		return e.message
+
+#Recebe id de objeto a ser deletado do banco, busca objeto no banco, e o deleta.
+@post('/deletarescreve')
+def deletaredicao():
+	response.content_type = 'application/json; charset=charset=UTF8'
+	dict  = clearRequest(request.forms)
+	idAut = dict.get('idAut')
+	idArt = dict.get('idArt')
+	try:
+		escreve = Escreve.objects().get(idAut = idAut, idArt = idArt)
+	except ValueError as e:
+		return e.message
+	try:
+		escreve.delete()
 		return sucess()
 	except ValueError as e:
 		return e.message
