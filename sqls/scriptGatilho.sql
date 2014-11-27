@@ -72,58 +72,161 @@ BEGIN
 END;
 
 
-
--- CREATE OR REPLACE PACKAGE patrocinio_pkg AS
---   TYPE patrocinioArray IS TABLE OF ROWID INDEX BY binary_integer; 
---   novasTuplas patrocinioArray;
---   vazio patrocinioArray;
--- END;
--- /
--- -- cabeçalho do gatilho composto
--- CREATE OR REPLACE TRIGGER patrocinio_saldoPat
---   FOR INSERT OR UPDATE OF valorPat
---   ON patrocinio
---   COMPOUND TRIGGER
-
---   -- declaração das variáveis
---   v_patrocinio patrocinio%ROWTYPE;
---   v_valorpat patrocinio.valorPat%TYPE;
-
---   -- antes de um insert/update vamos resetar o array novasTuplas
---   BEFORE STATEMENT IS
---     BEGIN
---       patrocinio_pkg.novasTuplas := patrocinio_pkg.vazio; 
---   END BEFORE STATEMENT;
-  
---   -- vamos capturar o rowid da tupla e salvar no array novasTuplas
---   -- percebam que nesse trecho estamos passando o new para o pacote
---   -- para que depois seja utilizado o pacote e não o new do trigger
---   AFTER EACH ROW IS
---     BEGIN
---       patrocinio_pkg.novasTuplas( patrocinio_pkg.novasTuplas.COUNT+1 ) := :new.ROWID;
---   END AFTER EACH ROW;
-
---   -- esse gatilho processa as novas tuplas
---   -- nós simplesmente varremos o array novasTuplas 
---   -- e processamos cada linha adicionado/alterada
---   -- o grande truque para evitar o problema de tabela mutante é passar a utilizar o pacote e não o new da trigger
---   AFTER STATEMENT IS
---     BEGIN
---       FOR i IN 1 .. patrocinio_pkg.novasTuplas.COUNT LOOP
-        
---         -- busca a tupla da tabela patrocinio com o rowid salvo no array novasTuplas
---         SELECT * INTO v_patrocinio FROM patrocinio WHERE ROWID = patrocinio_pkg.novasTuplas(i);
---         -- busca o saldo do patrocinio
---         SELECT valorPat INTO v_valorpat FROM patrocinio WHERE cnpjPat = v_patrocinio.cnpjPat AND codEv = v_patrocinio.codEv AND numEd = v_patrocinio.numEd;
-
---       IF inserting THEN
---             UPDATE patrocinio SET saldoPat = v_patrocinio.valorPat WHERE cnpjPat = v_patrocinio.cnpjPat AND codEv = v_patrocinio.codEv AND numEd = v_patrocinio.numEd;
---        ELSIF updating THEN
---            UPDATE patrocinio SET saldoPat = saldoPat + v_patrocinio.valorPat - v_valorpat WHERE cnpjPat = v_patrocinio.cnpjPat AND codEv = v_patrocinio.codEv AND numEd = v_patrocinio.numEd;
---         END IF;
---       END LOOP;
---   END AFTER STATEMENT;
-  
--- END patrocinio_saldoPat;
-
-
+CREATE OR REPLACE PACKAGE pkg_patrocinio IS
+   -- declarando um tipo (vPessoaPackage) igual ao da tabela Pessoa
+   TYPE vPatrocinioPackage IS TABLE OF patrocinio%ROWTYPE INDEX BY BINARY_INTEGER;
+   -- atribuindo uma variável do tipo criado acima
+   vPatrocinio vPatrocinioPackage;
+   vPatrocinioOLD vPatrocinioPackage;
+ END pkg_patrocinio;
+/ 
+create or replace trigger T_INSERT_saldoPat_BEFORE
+ before insert on patrocinio
+ for each row
+ DECLARE
+ -- declara um índice para navegar pelos registros
+ n BINARY_INTEGER;
+ BEGIN
+ 
+-- recupera o valor do último índice do package e soma 1
+ -- se for null, retorna 0 (+1)
+ n := NVL(pkg_patrocinio.vPatrocinio.LAST,0) + 1;
+ 
+-- armazena os valores da pessoa na package
+ pkg_patrocinio.vPatrocinio(n).cnpjpat := :NEW.cnpjpat;
+ pkg_patrocinio.vPatrocinio(n).codEv := :NEW.codEv;
+ pkg_patrocinio.vPatrocinio(n).numEd := :NEW.numEd;
+ pkg_patrocinio.vPatrocinio(n).valorpat := :NEW.valorpat;
+ pkg_patrocinio.vPatrocinio(n).saldopat := :NEW.saldopat;
+ pkg_patrocinio.vPatrocinio(n).datapat := :NEW.datapat;
+ 
+END T_INSERT_saldoPat_BEFORE;
+/
+CREATE OR REPLACE TRIGGER T_INSERT_saldoPat_AFTER AFTER INSERT ON patrocinio
+ 
+DECLARE
+   -- cria o tipo para variável que armazena o conteúdo do package
+   TYPE tbPatrocinioPackage IS TABLE OF patrocinio%ROWTYPE INDEX BY BINARY_INTEGER;
+   tbPatrocinio   tbPatrocinioPackage;
+   x           BINARY_INTEGER; --indice
+ 
+ BEGIN
+   -- atribui ao índice o primeiro valor do package
+   x := pkg_patrocinio.vPatrocinio.FIRST;
+   -- limpa a var criada
+   tbPatrocinio.DELETE;
+ 
+   -- adiciona todos os registros do package na variável criada
+   WHILE x IS NOT NULL LOOP
+     tbPatrocinio(x).cnpjpat := pkg_patrocinio.vPatrocinio(x).cnpjpat;
+     tbPatrocinio(x).codEv := pkg_patrocinio.vPatrocinio(x).codEv;
+     tbPatrocinio(x).numEd := pkg_patrocinio.vPatrocinio(x).numEd;
+     tbPatrocinio(x).valorpat := pkg_patrocinio.vPatrocinio(x).valorpat;
+     tbPatrocinio(x).saldopat := pkg_patrocinio.vPatrocinio(x).saldopat;
+     tbPatrocinio(x).datapat := pkg_patrocinio.vPatrocinio(x).datapat;
+     x := pkg_patrocinio.vPatrocinio.NEXT(x); -- incrementa o valor do índice
+   END LOOP;
+ 
+   pkg_patrocinio.vPatrocinio.DELETE; -- limpa o package
+   x := tbPatrocinio.FIRST; -- atribui ao índice o primeiro valor
+ 
+   -- loop para percorrer todos os registros do package
+   WHILE x IS NOT NULL LOOP
+     BEGIN
+       UPDATE patrocinio p SET p.saldopat = tbPatrocinio(x).valorpat
+       WHERE p.cnpjpat = tbPatrocinio(x).cnpjpat AND p.codEv = tbPatrocinio(x).codEv AND p.numEd = tbPatrocinio(x).numEd;
+     EXCEPTION
+       WHEN OTHERS THEN
+         RAISE_APPLICATION_ERROR(-20002
+                                ,'Não foi possível atualizar os dados na tabela Patrocinio. Trigger: T_GERA_ENDERECO_AFTER ' || SQLERRM);
+     END;
+     -- atualiza valor do indice para o proximo registro
+     x := tbPatrocinio.NEXT(x);
+   END LOOP;
+ 
+ END T_INSERT_saldoPat_AFTER;
+/
+create or replace trigger T_UPDATE_saldoPat_BEFORE
+ before update of valorpat on patrocinio
+ for each row
+ DECLARE
+ -- declara um índice para navegar pelos registros
+ n BINARY_INTEGER;
+ m BINARY_INTEGER;
+ BEGIN
+ 
+-- recupera o valor do último índice do package e soma 1
+ -- se for null, retorna 0 (+1)
+ n := NVL(pkg_patrocinio.vPatrocinio.LAST,0) + 1;
+ m := NVL(pkg_patrocinio.vPatrocinioOLD.LAST,0) + 1;
+ 
+-- armazena os valores da pessoa na package
+ pkg_patrocinio.vPatrocinio(n).cnpjpat := :NEW.cnpjpat;
+ pkg_patrocinio.vPatrocinio(n).codEv := :NEW.codEv;
+ pkg_patrocinio.vPatrocinio(n).numEd := :NEW.numEd;
+ pkg_patrocinio.vPatrocinio(n).valorpat := :NEW.valorpat;
+ pkg_patrocinio.vPatrocinio(n).saldopat := :NEW.saldopat;
+ pkg_patrocinio.vPatrocinio(n).datapat := :NEW.datapat; 
+ 
+ pkg_patrocinio.vPatrocinioOLD(n).cnpjpat := :OLD.cnpjpat;
+ pkg_patrocinio.vPatrocinioOLD(n).codEv := :OLD.codEv;
+ pkg_patrocinio.vPatrocinioOLD(n).numEd := :OLD.numEd;
+ pkg_patrocinio.vPatrocinioOLD(n).valorpat := :OLD.valorpat;
+ pkg_patrocinio.vPatrocinioOLD(n).saldopat := :OLD.saldopat;
+ pkg_patrocinio.vPatrocinioOLD(n).datapat := :OLD.datapat;
+ 
+END T_UPDATE_saldoPat_BEFORE;
+/
+CREATE OR REPLACE TRIGGER T_UPDATE_saldoPat_AFTER AFTER  update OF valorpat ON patrocinio
+ 
+DECLARE
+   -- cria o tipo para variável que armazena o conteúdo do package
+   TYPE tbPatrocinioPackage IS TABLE OF patrocinio%ROWTYPE INDEX BY BINARY_INTEGER;
+   tbPatrocinio   tbPatrocinioPackage;
+   tbPatrocinioOLD tbPatrocinioPackage;
+   x           BINARY_INTEGER; --indice
+ 
+ BEGIN
+   -- atribui ao índice o primeiro valor do package
+   x := pkg_patrocinio.vPatrocinio.FIRST;
+   -- limpa a var criada
+   tbPatrocinio.DELETE;
+   tbPatrocinioOLD.DELETE;
+ 
+   -- adiciona todos os registros do package na variável criada
+   WHILE x IS NOT NULL LOOP
+     tbPatrocinio(x).cnpjpat := pkg_patrocinio.vPatrocinio(x).cnpjpat;
+     tbPatrocinio(x).codEv := pkg_patrocinio.vPatrocinio(x).codEv;
+     tbPatrocinio(x).numEd := pkg_patrocinio.vPatrocinio(x).numEd;
+     tbPatrocinio(x).valorpat := pkg_patrocinio.vPatrocinio(x).valorpat;
+     tbPatrocinio(x).saldopat := pkg_patrocinio.vPatrocinio(x).saldopat;
+     tbPatrocinio(x).datapat := pkg_patrocinio.vPatrocinio(x).datapat;
+     
+     tbPatrocinioOLD(x).cnpjpat := pkg_patrocinio.vPatrocinioOLD(x).cnpjpat;
+     tbPatrocinioOLD(x).codEv := pkg_patrocinio.vPatrocinioOLD(x).codEv;
+     tbPatrocinioOLD(x).numEd := pkg_patrocinio.vPatrocinioOLD(x).numEd;
+     tbPatrocinioOLD(x).valorpat := pkg_patrocinio.vPatrocinioOLD(x).valorpat;
+     tbPatrocinioOLD(x).saldopat := pkg_patrocinio.vPatrocinioOLD(x).saldopat;
+     tbPatrocinioOLD(x).datapat := pkg_patrocinio.vPatrocinioOLD(x).datapat;
+     x := pkg_patrocinio.vPatrocinio.NEXT(x); -- incrementa o valor do índice
+   END LOOP;
+ 
+   pkg_patrocinio.vPatrocinio.DELETE; -- limpa o package
+   pkg_patrocinio.vPatrocinioOLD.DELETE; -- limpa o package
+   x := tbPatrocinio.FIRST; -- atribui ao índice o primeiro valor
+ 
+   -- loop para percorrer todos os registros do package
+   WHILE x IS NOT NULL LOOP
+     BEGIN
+       UPDATE patrocinio p SET p.saldopat = p.saldopat - tbPatrocinioOLD(x).valorpat + tbPatrocinio(x).valorpat
+       WHERE p.cnpjpat = tbPatrocinio(x).cnpjpat AND p.codEv = tbPatrocinio(x).codEv AND p.numEd = tbPatrocinio(x).numEd;
+     EXCEPTION
+       WHEN OTHERS THEN
+         RAISE_APPLICATION_ERROR(-20002
+                                ,'Não foi possível atualizar os dados na tabela Patrocinio. Trigger: T_GERA_ENDERECO_AFTER ' || SQLERRM);
+     END;
+     -- atualiza valor do indice para o proximo registro
+     x := tbPatrocinio.NEXT(x);
+   END LOOP;
+ 
+ END T_UPDATE_saldoPat_AFTER;
